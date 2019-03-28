@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -lpthread -g
+CFLAGS = -Wall -lpthread
 TARGET = tvist
 
 all: $(TARGET)
