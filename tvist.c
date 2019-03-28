@@ -1,7 +1,5 @@
 #include "tvist.h"
 
-/* TODO pretty this shit up if you gonna put it on your resume later */
-
 int main(int argc, char *argv[])
 {
   FILE *inStream, *outStream;
@@ -24,7 +22,7 @@ int main(int argc, char *argv[])
   while(argv[2][outLen] != '\0')
     outLen++;
 
-  fBuffer = malloc(sizeof(char)*(72+inLen));
+  fBuffer = malloc(sizeof(char)*(72+inLen)); /*72 is length of below string*/
   snprintf(fBuffer, 72+inLen, "ffmpeg -y -hide_banner -loglevel panic -i %s -f image2pipe -vcodec bmp - ", argv[1]);
 
   if((inStream = popen(fBuffer, "r")) == NULL)
@@ -33,7 +31,7 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  fBuffer = realloc(fBuffer, sizeof(char)*(56+outLen));
+  fBuffer = realloc(fBuffer, sizeof(char)*(56+outLen)); /*56 is length of below string*/
   snprintf(fBuffer, 79+outLen, "ffmpeg -y -hide_banner -loglevel panic -f image2pipe -i - %s", argv[2]);
 
   if((outStream = popen(fBuffer, "w")) == NULL)
@@ -58,8 +56,8 @@ int main(int argc, char *argv[])
       return -1;
     }
 
-    memcpy(&fileSize, fileHeader+2, 4); /*fileSize = *(fileHeader + 2); read fileSize and pixeloffset from bmp header*/
-    memcpy(&pixelOffset, fileHeader+10, 4); /*pixelOffset = *(fileHeader + 10); none of this works*/
+    memcpy(&fileSize, fileHeader+2, 4); /*get fileSize and pixel matrix offset*/
+    memcpy(&pixelOffset, fileHeader+10, 4);
 
     if(fileSize <= 0 || pixelOffset <= 0)
     {
@@ -76,9 +74,9 @@ int main(int argc, char *argv[])
     pixelData = malloc(sizeof(uint8_t)*(fileSize-pixelOffset)); /*grab the pixel matrix so we can mess with it*/
     readBytes(fileno(inStream), pixelData, fileSize-pixelOffset);
 
-    mutate(pixelData, fileSize-pixelOffset);
+    mutate(pixelData, fileSize-pixelOffset); /*change each frame with sox*/
 
-    write(fileno(outStream), (void*)fileHeader, 14);
+    write(fileno(outStream), (void*)fileHeader, 14); /*write to ffmpeg*/
     write(fileno(outStream), (void*)restHeader, pixelOffset-14);
     write(fileno(outStream), (void*)pixelData, fileSize-pixelOffset);
 
@@ -98,7 +96,7 @@ int main(int argc, char *argv[])
 }
 
 void readBytes(int fileNo, uint8_t *buffer, unsigned int bytes)
-{
+{ /*reads until number of bytes read in or pipe closed*/
   unsigned int lastRead;
   unsigned int totalRead = 0;
   unsigned int totalLeft = bytes;
