@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <sys/wait.h>
 
 typedef struct rwData
 {

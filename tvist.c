@@ -178,6 +178,8 @@ void mutate(uint8_t *pixelData, unsigned int length)
     pthread_join(w, NULL);
     pthread_join(r, NULL);
 
+    wait(NULL); /*should probably add error-handling for sox now*/
+
     memcpy(pixelData, temp, length);
     free(temp);
     free(writerData);
